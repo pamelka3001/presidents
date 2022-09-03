@@ -45,10 +45,11 @@ public class PresidentsController {
     public PresidentDto updatePartial(@RequestBody PresidentDto presidentDto) {
         return presidentService.updatePresidentPartial(presidentDto);
     }
-    @ExceptionHandler({RuntimeException.class, IllegalAccessError.class})
-    public final ResponseEntity<Object> handleExceptions(Exception ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+//    Wyłącznie w celach dydaktycznych
+//    @ExceptionHandler({RuntimeException.class, IllegalAccessError.class})
+//    public final ResponseEntity<Object> handleExceptions(Exception ex) {
+//        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 
     @DeleteMapping("/delete/{id}")
     public void deleteByIndex(@PathVariable Long id){
