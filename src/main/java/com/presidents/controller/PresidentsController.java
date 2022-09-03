@@ -1,12 +1,14 @@
 package com.presidents.controller;
 
-import com.presidents.model.entity.President;
-import com.presidents.repository.PresidentsRepository;
+import com.presidents.model.dto.PresidentDto;
 import com.presidents.service.president.PresidentService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 @RequestMapping("presidents")
 @RestController
@@ -16,51 +18,41 @@ public class PresidentsController {
     private final PresidentService presidentService;
 
     @GetMapping("all")
-    public List<President> getAll() {
+    public List<PresidentDto> getAll() {
         return presidentService.getAllPresidents();
+    }
+    @GetMapping("find/{name}")
+    public Set<PresidentDto> findPresidentByName(@PathVariable String name){
+        return presidentService.findPresidentsByName(name);
+    }
+    @GetMapping("find-by-party/{party}")
+    public Set<PresidentDto> findPresidentByPoliticalParty(@PathVariable String party){
+        return presidentService.findPresidentsByPoliticalParty(party);
     }
 
     @PostMapping("save")
-    public President save(@RequestBody President president) {
-        return presidentService.savePresident(president);
+    public PresidentDto save(@RequestBody PresidentDto presidentDto) {
+        return presidentService.savePresident(presidentDto);
     }
 
-//    @PutMapping("update")
-//    public String updateWithBodyOnly(@RequestBody President president) {
-//        if (PresidentsDB.presidentsRepository.size() - 1 < president.getId()) {
-//            president.setId(Integer.valueOf(PresidentsDB.presidentsRepository.size()).longValue());
-//            PresidentsDB.presidentsRepository.add(president);
-//        } else {
-//            PresidentsDB.presidentsRepository.set(president.getId().intValue(), president);
-//        }
-//        return "Updated";
-//    }
-//
-//    @PatchMapping("update")
-//    public String updatePartial(@RequestBody President president) {
-//        President p = PresidentsDB.presidentsRepository.get(Math.toIntExact(president.getId()));
-//        if (president.getName() != null) {
-//            p.setName(president.getName());
-//        }
-//        if (president.getSurname() != null) {
-//            p.setSurname(president.getSurname());
-//        }
-//        if (president.getTermFrom() != null) {
-//            p.setTermFrom(president.getTermFrom());
-//        }
-//        if (president.getTermTo() != null) {
-//            p.setTermTo(president.getTermTo());
-//        }
-//        if (president.getPoliticalParty() != null) {
-//            p.setPoliticalParty(president.getPoliticalParty());
-//        }
-//        return "Updated";
-//    }
-//
-//    @DeleteMapping("/delete/{id}")
-//    public String deleteByIndex(@PathVariable int id){
-//        PresidentsDB.presidentsRepository.remove(id);
-//        return "Removed!";
-//    }
+    @PutMapping("update")
+    public PresidentDto update(@RequestBody PresidentDto presidentDto) {
+
+        return presidentService.updatePresident(presidentDto);
+    }
+
+    @PatchMapping("update")
+    public PresidentDto updatePartial(@RequestBody PresidentDto presidentDto) {
+        return presidentService.updatePresidentPartial(presidentDto);
+    }
+    @ExceptionHandler({RuntimeException.class, IllegalAccessError.class})
+    public final ResponseEntity<Object> handleExceptions(Exception ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public void deleteByIndex(@PathVariable Long id){
+        presidentService.deletePresident(id);
+    }
 
 }
